@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700">
+  <rect width="1000" height="700" fill="#F5F0E6"/>
+  <!-- Top Dark Showcase Card -->
+  <rect x="36" y="32" width="928" height="392" rx="16" fill="#16272B"/>
+  <g transform="translate(62, 126) scale(0.85)">
+    <path d="M 130.5 61.5 H 61.5 V 117.5 H 120.5" fill="none" stroke="#F4EFE6" stroke-width="21" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M 134.5 144.0 H 191.5 V 199.0 H 120.5" fill="none" stroke="#F4EFE6" stroke-width="21" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M 124.5 81.5 C 166.0 89.0, 174.0 113.5, 145.5 132.0 C 118.0 150.0, 114.5 168.5, 129.0 188.0" fill="none" stroke="#91D1B5" stroke-width="23" stroke-linecap="butt"/>
+    <rect x="182" y="51" width="23" height="23" fill="#EE9A7C"/>
+  </g>
+  <text x="260" y="270" font-family="Inter Display, Inter, sans-serif" font-weight="600" font-size="118" letter-spacing="-2" fill="#F4EFE6">kinetix</text>
+  <text x="638" y="270" font-family="Inter, sans-serif" font-weight="500" font-size="56" fill="#EE9A7C">L2</text>
+  <line x1="78" y1="308" x2="922" y2="308" stroke="#283C40" stroke-width="1.5"/>
+  <!-- 4 Modality tracks -->
+  <line x1="78" y1="371" x2="258" y2="371" stroke="#283C40" stroke-width="1.5"/>
+  <rect x="78" y="384" width="8" height="8" fill="#507D70"/>
+  <line x1="290" y1="371" x2="470" y2="371" stroke="#283C40" stroke-width="1.5"/>
+  <rect x="290" y="384" width="8" height="8" fill="#507D70"/>
+  <line x1="502" y1="371" x2="682" y2="371" stroke="#283C40" stroke-width="1.5"/>
+  <rect x="502" y="384" width="8" height="8" fill="#6AA892"/>
+  <line x1="714" y1="371" x2="894" y2="371" stroke="#283C40" stroke-width="1.5"/>
+  <rect x="714" y="384" width="8" height="8" fill="#EE9A7C"/>
+
+  <!-- Bottom Left App Icon Showcase Card -->
+  <rect x="36" y="478" width="445" height="168" rx="10" fill="#E8E4DB"/>
+  <g transform="translate(61, 501) scale(0.453)">
+    <rect width="256" height="256" rx="56" fill="#16272B"/>
+    <path d="M 130.5 61.5 H 61.5 V 117.5 H 120.5" fill="none" stroke="#F4EFE6" stroke-width="21" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M 134.5 144.0 H 191.5 V 199.0 H 120.5" fill="none" stroke="#F4EFE6" stroke-width="21" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M 124.5 81.5 C 166.0 89.0, 174.0 113.5, 145.5 132.0 C 118.0 150.0, 114.5 168.5, 129.0 188.0" fill="none" stroke="#91D1B5" stroke-width="23" stroke-linecap="butt"/>
+    <rect x="182" y="51" width="23" height="23" fill="#EE9A7C"/>
+  </g>
+
+  <!-- Bottom Right Light Lockup Showcase Card -->
+  <rect x="498" y="478" width="466" height="168" rx="10" fill="#E8E4DB"/>
+  <g transform="translate(515, 520) scale(0.32)">
+    <path d="M 130.5 61.5 H 61.5 V 117.5 H 120.5" fill="none" stroke="#16272B" stroke-width="21" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M 134.5 144.0 H 191.5 V 199.0 H 120.5" fill="none" stroke="#16272B" stroke-width="21" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M 124.5 81.5 C 166.0 89.0, 174.0 113.5, 145.5 132.0 C 118.0 150.0, 114.5 168.5, 129.0 188.0" fill="none" stroke="#1C7B5F" stroke-width="23" stroke-linecap="butt"/>
+    <rect x="182" y="51" width="23" height="23" fill="#B6573D"/>
+  </g>
+  <text x="602" y="581" font-family="Inter Display, Inter, sans-serif" font-weight="600" font-size="62" letter-spacing="-1" fill="#16272B">kinetix</text>
+  <text x="788" y="581" font-family="Inter, sans-serif" font-weight="500" font-size="30" fill="#B6573D">L2</text>
+
+  <!-- Palette Swatches -->
+  <rect x="882" y="665" width="15" height="15" rx="2" fill="#16272B"/>
+  <rect x="904" y="665" width="15" height="15" rx="2" fill="#91D1B5"/>
+  <rect x="926" y="665" width="15" height="15" rx="2" fill="#EE9A7C"/>
+</svg>

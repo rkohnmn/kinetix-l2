@@ -1,0 +1,66 @@
+{
+  "name": "Kinetix L2 Native Design Token System",
+  "version": "1.0.0",
+  "grid_base_px": 8,
+  "typography_scale_ratio": 1.25,
+  "themes": {
+    "dark_obsidian": {
+      "bg_canvas": "#0B0F17",
+      "bg_surface_1": "#131B2E",
+      "bg_surface_2": "#1C2742",
+      "bg_elevated": "#243254",
+      "border_subtle": "#2B3B61",
+      "border_focus": "#60A5FA",
+      "text_primary": { "hex": "#F8FAFC", "wcag_contrast_vs_canvas": 17.4, "level": "AAA" },
+      "text_secondary": { "hex": "#CBD5E1", "wcag_contrast_vs_canvas": 11.2, "level": "AAA" },
+      "text_muted": { "hex": "#94A3B8", "wcag_contrast_vs_canvas": 5.8, "level": "AA" },
+      "primary_accent": "#3B82F6",
+      "secondary_accent": "#14B8A6",
+      "status_success": "#10B981",
+      "status_warning": "#F59E0B",
+      "status_danger": "#F43F5E",
+      "status_unseen": "#38BDF8",
+      "modalities": {
+        "receptive_text": "#38BDF8",
+        "receptive_audio": "#34D399",
+        "productive_text": "#FBBF24",
+        "productive_audio": "#FB7185"
+      }
+    },
+    "light_archival": {
+      "bg_canvas": "#F8FAFC",
+      "bg_surface_1": "#FFFFFF",
+      "bg_surface_2": "#F1F5F9",
+      "bg_elevated": "#E2E8F0",
+      "border_subtle": "#CBD5E1",
+      "border_focus": "#1D4ED8",
+      "text_primary": { "hex": "#0F172A", "wcag_contrast_vs_canvas": 16.8, "level": "AAA" },
+      "text_secondary": { "hex": "#334155", "wcag_contrast_vs_canvas": 9.4, "level": "AAA" },
+      "text_muted": { "hex": "#475569", "wcag_contrast_vs_canvas": 6.1, "level": "AA" },
+      "primary_accent": "#2563EB",
+      "secondary_accent": "#0D9488",
+      "status_success": "#059669",
+      "status_warning": "#D97706",
+      "status_danger": "#E11D48",
+      "status_unseen": "#0284C7"
+    }
+  },
+  "spacing_px": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "xxl": 48,
+    "min_touch_target": 44
+  },
+  "typography_px": {
+    "caption": 11.5,
+    "small": 13.0,
+    "body": 15.5,
+    "lead": 19.0,
+    "h3": 22.0,
+    "h2": 27.0,
+    "h1": 34.0
+  }
+}

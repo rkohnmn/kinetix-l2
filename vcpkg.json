@@ -1,0 +1,12 @@
+{
+  "name": "kinetix-l2",
+  "version": "2.0.0",
+  "description": "Native C++20 4-Modality Second Language Acquisition Workbench (Photon Micro-GUI + Dear ImGui Dockspace + PangoCairo + SQLite3)",
+  "license": "MIT",
+  "dependencies": [
+    "sdl2",
+    "cairo",
+    "pango",
+    "sqlite3"
+  ]
+}

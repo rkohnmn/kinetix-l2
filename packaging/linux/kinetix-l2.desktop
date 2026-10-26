@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=kinetix L2
+GenericName=Second Language Acquisition Focus Studio
+Comment=Native C++20 4-Modality Procedural Fluency & FSRS-4.5 Studio
+Exec=kinetix-l2
+Icon=assets/branding/kinetix-l2-icon.svg
+Terminal=false
+Categories=Education;Languages;Science;
+Keywords=Language;FSRS;SpacedRepetition;SLA;German;Spanish;Japanese;
+StartupWMClass=kinetix-l2

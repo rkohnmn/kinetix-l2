@@ -1,0 +1,18 @@
+{
+  "schema_version": "kinetix-crdt-revlog-v1",
+  "events": [
+    {"uuid": "ev-302-2-1792581080-11", "timestamp": 1792581080, "node_id": 302, "modality": 2, "rating": 4, "response_time_ms": 1180, "post_stability": 0.750072, "post_difficulty": 6.39554},
+    {"uuid": "ev-302-2-1792580960-10", "timestamp": 1792580960, "node_id": 302, "modality": 2, "rating": 3, "response_time_ms": 1650, "post_stability": 0.414965, "post_difficulty": 6.87935},
+    {"uuid": "ev-302-2-1792580840-9", "timestamp": 1792580840, "node_id": 302, "modality": 2, "rating": 2, "response_time_ms": 2650, "post_stability": 0.394934, "post_difficulty": 7.06744},
+    {"uuid": "ev-302-2-1792580720-8", "timestamp": 1792580720, "node_id": 302, "modality": 2, "rating": 1, "response_time_ms": 2900, "post_stability": 0.646609, "post_difficulty": 6.95821},
+    {"uuid": "ev-302-0-1792580720-7", "timestamp": 1792580720, "node_id": 302, "modality": 0, "rating": 3, "response_time_ms": 1120, "post_stability": 17.1011, "post_difficulty": 5.13143},
+    {"uuid": "ev-302-2-1792580480-7", "timestamp": 1792580480, "node_id": 302, "modality": 2, "rating": 4, "response_time_ms": 1180, "post_stability": 1.55289, "post_difficulty": 6.43851},
+    {"uuid": "ev-302-2-1792580360-6", "timestamp": 1792580360, "node_id": 302, "modality": 2, "rating": 3, "response_time_ms": 1650, "post_stability": 0.859111, "post_difficulty": 6.91967},
+    {"uuid": "ev-302-2-1792580240-5", "timestamp": 1792580240, "node_id": 302, "modality": 2, "rating": 2, "response_time_ms": 2650, "post_stability": 0.81764, "post_difficulty": 7.10905},
+    {"uuid": "ev-302-2-1792580120-4", "timestamp": 1792580120, "node_id": 302, "modality": 2, "rating": 1, "response_time_ms": 2900, "post_stability": 1.33869, "post_difficulty": 7.00592},
+    {"uuid": "ev-302-0-1792580120-6", "timestamp": 1792580120, "node_id": 302, "modality": 0, "rating": 3, "response_time_ms": 1120, "post_stability": 16.2756, "post_difficulty": 5.2636},
+    {"uuid": "ev-104-3-1792407200-3", "timestamp": 1792407200, "node_id": 104, "modality": 3, "rating": 3, "response_time_ms": 2120, "post_stability": 4.1, "post_difficulty": 6.4},
+    {"uuid": "ev-103-2-1792320800-7", "timestamp": 1792320800, "node_id": 103, "modality": 2, "rating": 1, "response_time_ms": 2740, "post_stability": 3.4, "post_difficulty": 8.7},
+    {"uuid": "ev-101-0-1792234400-9", "timestamp": 1792234400, "node_id": 101, "modality": 0, "rating": 3, "response_time_ms": 920, "post_stability": 42.5, "post_difficulty": 3.8}
+  ]
+}

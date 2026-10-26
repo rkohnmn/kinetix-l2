@@ -1,0 +1,119 @@
+{
+  "outcome": {
+    "id": "outcome_root_1",
+    "statement": "Increase 90-day intermediate L2 spoken and written procedural recall accuracy (<2500ms latency) from 24% baseline to 68% while maintaining >=58% D30 learner retention.",
+    "metric_baseline": 0.24,
+    "metric_target": 0.68,
+    "timeframe": "Q4 2026 - Q2 2027"
+  },
+  "opportunities": [
+    {
+      "id": "opp_1_recognition_trap",
+      "user_need": "Learners using tap-based word banks can recognize words passively on screen but freeze when trying to construct sentences from memory in conversation.",
+      "evidence_count": 42,
+      "targeted": true,
+      "solutions": [
+        {
+          "id": "sol_1a_dynamic_fsrs_escalation",
+          "parent_opportunity_id": "opp_1_recognition_trap",
+          "title": "Dynamic FSRS Stability Tier Escalation (Restrict recognition choices to Tier 0 S<1d; mandate zero-word-bank active recall and <2500ms latency for Tiers 1-3)",
+          "selected": true,
+          "assumption_tests": [
+            {
+              "id": "test_1a",
+              "hypothesis": "Eliminating word banks once Stability S >= 1.0 day increases 14-day cold-transfer production accuracy by >=35% without increasing session drop-off.",
+              "method": "Within-subject cold-transfer production test across 25 intermediate learners",
+              "pass_threshold": ">=35% gain in unassisted sentence production"
+            }
+          ]
+        },
+        {
+          "id": "sol_1b_static_typing_toggle",
+          "parent_opportunity_id": "opp_1_recognition_trap",
+          "title": "Optional manual keyboard toggle on standard multiple-choice drills",
+          "selected": false,
+          "assumption_tests": [
+            {
+              "id": "test_1b",
+              "hypothesis": "At least 50% of learners will voluntarily toggle off word banks when given an optional button.",
+              "method": "Prototype click-stream observation",
+              "pass_threshold": ">=50% voluntary adoption (Failed in literature: learners default to lowest-effort recognition)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "opp_2_context_isolation",
+      "user_need": "Flashcard users burn out reviewing isolated, context-free words in Anki and cannot bridge receptive reading in LingQ with structured grammatical output.",
+      "evidence_count": 38,
+      "targeted": true,
+      "solutions": [
+        {
+          "id": "sol_2a_unified_4modality_workbench",
+          "parent_opportunity_id": "opp_2_context_isolation",
+          "title": "Unified 4-Modality Knowledge Graph with 1-Click Interlinear i+1 Sentence Mining & WaniKani Prerequisite Gating (S_rec >= 3.0d)",
+          "selected": true,
+          "assumption_tests": [
+            {
+              "id": "test_2a",
+              "hypothesis": "Gating productive flashcards until prerequisite receptive stability reaches S_rec >= 3.0 days reduces card lapse rate (leeches) by >=40%.",
+              "method": "FSRS-4.5 longitudinal simulation and cohort comparison",
+              "pass_threshold": ">=40% reduction in lapse frequency"
+            }
+          ]
+        },
+        {
+          "id": "sol_2b_browser_extension_export",
+          "parent_opportunity_id": "opp_2_context_isolation",
+          "title": "CSV export script between third-party reader apps and external SRS decks",
+          "selected": false,
+          "assumption_tests": [
+            {
+              "id": "test_2b",
+              "hypothesis": "Mainstream language learners will configure multi-step CSV/API sync pipelines weekly.",
+              "method": "Onboarding funnel completion test",
+              "pass_threshold": ">=60% setup completion (Rejected due to high extraneous friction)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "opp_3_streak_burnout",
+      "user_need": "Learners who miss 2-3 days due to travel or illness face either a punitive streak reset to zero or a crushing 500-card SRS backlog wall, causing permanent churn.",
+      "evidence_count": 31,
+      "targeted": true,
+      "solutions": [
+        {
+          "id": "sol_3a_resilient_momentum_shift",
+          "parent_opportunity_id": "opp_3_streak_burnout",
+          "title": "Resilient Momentum & FSRS Timestamp Vacation Shift + 5-Minute Regret Test Stopping Cue",
+          "selected": true,
+          "assumption_tests": [
+            {
+              "id": "test_3a",
+              "hypothesis": "Allowing one-click FSRS timestamp shifting during pauses improves post-absence reactivation by >=50% compared to raw backlog accumulation.",
+              "method": "Simulated 5-day pause cohort recovery test",
+              "pass_threshold": ">=50% return-to-session completion rate"
+            }
+          ]
+        },
+        {
+          "id": "sol_3b_paid_streak_freeze_gems",
+          "parent_opportunity_id": "opp_3_streak_burnout",
+          "title": "In-app virtual currency streak freezes while review backlogs continue accumulating silently",
+          "selected": false,
+          "assumption_tests": [
+            {
+              "id": "test_3b",
+              "hypothesis": "Freezing the badge number alone prevents churn even when the underlying SRS queue doubles.",
+              "method": "Retention analysis after 7-day absence",
+              "pass_threshold": "<15% churn post-absence (Rejected under Ethical Retention Policy)"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

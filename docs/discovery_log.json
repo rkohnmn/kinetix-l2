@@ -1,0 +1,31 @@
+{
+  "project": "Kinetix L2 — Native 4-Modality Language Acquisition Workbench",
+  "outcome_anchor": "outcome_root_1",
+  "cadence_status": "HEALTHY",
+  "interviews_analyzed": [
+    {
+      "id": "int_01",
+      "date": "2026-09-28",
+      "segment": "Intermediate Plateau Learner (800+ day Duolingo streak, A2 speaking ceiling)",
+      "key_pain": "Can tap word banks in 5 seconds but freezes when trying to order or explain a train delay in German without visual prompts."
+    },
+    {
+      "id": "int_02",
+      "date": "2026-10-04",
+      "segment": "Anki + LingQ Power User (Japanese N3 / Spanish B1)",
+      "key_pain": "Spends 45 minutes a day maintaining broken Anki add-ons and manually copying sentences from LingQ; Anki treats reading recognition and spoken recall as the same card."
+    },
+    {
+      "id": "int_03",
+      "date": "2026-10-12",
+      "segment": "Commuter / Audio Learner (Pimsleur + Babbel subscriber)",
+      "key_pain": "Loves Pimsleur's prosodic back-chaining for pronunciation, but after 90 hours still knows fewer than 500 words and cannot read authentic station signs or emails."
+    },
+    {
+      "id": "int_04",
+      "date": "2026-10-18",
+      "segment": "Returning Adult Professional",
+      "key_pain": "Quit Anki and WaniKani after a 1-week business trip resulted in 640 overdue reviews and constant leech failures on similar-sounding German -ung nouns."
+    }
+  ]
+}

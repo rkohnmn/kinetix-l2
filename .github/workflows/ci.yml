@@ -1,0 +1,47 @@
+name: Kinetix L2 Native Cross-Platform CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  linux-native-build-and-audit:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Native C++20, SDL2, Cairo, and SQLite3 Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake libsdl2-dev libcairo2-dev libsqlite3-dev python3
+      - name: Build Kinetix L2 & Test Suite
+        run: make all
+      - name: Run Unit & Integration Tests
+        run: make test
+      - name: Run Headless Native GUI & SQLite3 Workflow Verification
+        run: make verify
+      - name: Run Native GUI Zero-Web Compliance & Project Audit
+        run: make audit
+
+  macos-native-build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Dependencies via Homebrew
+        run: brew install cmake sdl2 cairo sqlite
+      - name: Configure and Build via CMake
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel
+          ctest --test-dir build --output-on-failure
+
+  windows-native-build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure CMake with vcpkg Native Dependencies
+        run: |
+          vcpkg install sdl2 cairo sqlite3
+          cmake -B build -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+          cmake --build build --config Release
