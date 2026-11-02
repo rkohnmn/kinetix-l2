@@ -35,3 +35,41 @@ jobs:
           cmake -B build -DCMAKE_BUILD_TYPE=Release
           cmake --build build --parallel
           ctest --test-dir build --output-on-failure
+
+  windows-native-build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ninja
+            mingw-w64-ucrt-x86_64-pkgconf
+            mingw-w64-ucrt-x86_64-SDL2
+            mingw-w64-ucrt-x86_64-cairo
+            mingw-w64-ucrt-x86_64-pango
+            mingw-w64-ucrt-x86_64-librsvg
+            mingw-w64-ucrt-x86_64-sqlite3
+      - name: Build real Windows renderer
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel 2
+      - name: Test rendering, PNG decoding and application behavior
+        run: ctest --test-dir build --output-on-failure
+      - name: Export real application snapshots
+        run: ./build/kinetix-l2.exe --db build/verify.sqlite3 --export-screenshots build/snapshots
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-rendering-evidence
+          path: |
+            build/snapshots/*.png
+            build/Testing/Temporary/LastTest.log

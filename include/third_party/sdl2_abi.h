@@ -1,4 +1,11 @@
 #pragma once
+#if defined(_WIN32)
+#ifndef SDL_MAIN_HANDLED
+#define SDL_MAIN_HANDLED
+#endif
+#include <SDL.h>
+#else
+#pragma once
 // Exact C ABI declarations for SDL2 (libSDL2-2.0.so.0 / SDL2.dll / libSDL2.dylib)
 // Used for native cross-platform window management, hardware texture blitting,
 // high-DPI scaling, keyboard/mouse/touch events, and PCM audio synthesis.
@@ -213,3 +220,5 @@ void SDL_Delay(uint32_t ms);
 uint64_t SDL_GetTicks64(void);
 
 } // extern "C"
+
+#endif // _WIN32

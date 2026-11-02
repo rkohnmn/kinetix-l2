@@ -1,4 +1,8 @@
 #pragma once
+#if defined(_WIN32)
+#include <cairo.h>
+#else
+#pragma once
 // Exact C ABI declarations for Cairo 2D Vector Graphics Library (libcairo.so.2)
 // Used for native vector UI rendering, gradients, drop shadows, Bezier curves, and PNG export.
 
@@ -68,6 +72,8 @@ typedef struct {
 } cairo_text_extents_t;
 
 const char* cairo_version_string(void);
+cairo_surface_t* cairo_image_surface_create_from_png(const char* filename);
+cairo_status_t cairo_surface_status(cairo_surface_t* surface);
 
 cairo_surface_t* cairo_image_surface_create(cairo_format_t format, int width, int height);
 cairo_surface_t* cairo_image_surface_create_for_data(
@@ -136,3 +142,5 @@ void cairo_text_extents(cairo_t* cr, const char* utf8, cairo_text_extents_t* ext
 void cairo_show_text(cairo_t* cr, const char* utf8);
 
 } // extern "C"
+
+#endif // _WIN32

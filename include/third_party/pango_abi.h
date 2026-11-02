@@ -1,4 +1,8 @@
 #pragma once
+#if defined(_WIN32)
+#include <pango/pangocairo.h>
+#else
+#pragma once
 // Exact C ABI declarations for Pango, PangoCairo, and GObject
 // (libpango-1.0.so.0, libpangocairo-1.0.so.0, libgobject-2.0.so.0)
 // Enables HarfBuzz-shaped typography with Inter, Inter Display, Noto Sans Mono,
@@ -46,3 +50,5 @@ void pango_font_description_free(PangoFontDescription* desc);
 void g_object_unref(void* object);
 
 } // extern "C"
+
+#endif // _WIN32

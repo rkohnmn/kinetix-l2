@@ -57,33 +57,25 @@ make test
 make audit
 ```
 
-### Windows (MSVC C++20 / CMake)
+### Windows (MSYS2 UCRT64 / CMake)
 
-```powershell
-# 1. Configure project with CMake (Release mode)
-cmake -B build-win -DCMAKE_BUILD_TYPE=Release
+Use the **UCRT64** shell from [MSYS2](https://www.msys2.org/). This builds the
+real SDL2 window/event system, Cairo renderer, Pango text shaping, librsvg SVG
+renderer and SQLite library. The former placeholder Windows ABI layer has been
+removed. MSVC builds are not currently supported.
 
-# 2. Build kinetix-l2 executable and test suite
-cmake --build build-win --config Release
-
-# 3. Run all 48 automated unit & integration tests (100% passing)
-.\build-win\Release\kinetix-tests.exe
-# Or run through CTest:
-ctest --test-dir build-win -C Release --output-on-failure
-
-# 4. Run system health check and feature verification
-.\build-win\Release\kinetix-l2.exe --health-check
-.\build-win\Release\kinetix-l2.exe --verify-all-features
-
-# 5. Run performance benchmark
-.\build-win\Release\kinetix-l2.exe --benchmark
-
-# 6. Run project compliance audits
-python scripts/validate_project.py .
-python scripts/check_imgui_cpp.py src/ui/main_window.cpp tests/test_main.cpp
-python scripts/validate_design_md.py .
-python scripts/native_gui_audit.py . --binary .\build-win\Release\kinetix-l2.exe
+```sh
+pacman -S --needed mingw-w64-ucrt-x86_64-{gcc,cmake,ninja,pkgconf,SDL2,cairo,pango,librsvg,sqlite3}
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+ctest --test-dir build --output-on-failure
+./build/kinetix-l2.exe
 ```
+
+Run from the repository root with `/ucrt64/bin` on `PATH` so the runtime DLLs,
+fonts and repository assets can be found. CI tests actual pixels, PNG decoding,
+SVG/text rendering and SDL event delivery with its headless video driver.
+These build artifacts are not a standalone Windows installer.
 
 ### Command-Line Interface (CLI) Reference
 

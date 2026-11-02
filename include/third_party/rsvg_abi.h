@@ -1,3 +1,7 @@
+#pragma once
+#if defined(_WIN32)
+#include <librsvg/rsvg.h>
+#else
 #ifndef KINETIX_THIRD_PARTY_RSVG_ABI_H
 #define KINETIX_THIRD_PARTY_RSVG_ABI_H
 
@@ -37,3 +41,5 @@ int rsvg_handle_render_document(RsvgHandle* handle, cairo_t* cr, const RsvgRecta
 #endif
 
 #endif // KINETIX_THIRD_PARTY_RSVG_ABI_H
+
+#endif // _WIN32

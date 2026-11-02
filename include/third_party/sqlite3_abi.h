@@ -1,4 +1,8 @@
 #pragma once
+#if defined(_WIN32)
+#include <sqlite3.h>
+#else
+#pragma once
 // Exact C ABI declarations for SQLite3 (libsqlite3.so.0 / sqlite3.dll / libsqlite3.dylib)
 // Public Domain - Compatible with SQLite 3.35+ / 3.40+
 
@@ -69,3 +73,5 @@ const unsigned char* sqlite3_column_text(sqlite3_stmt* pStmt, int iCol);
 int sqlite3_column_bytes(sqlite3_stmt* pStmt, int iCol);
 
 } // extern "C"
+
+#endif // _WIN32

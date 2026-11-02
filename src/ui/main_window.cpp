@@ -51,6 +51,9 @@ MainWindow::~MainWindow() {
 }
 
 bool MainWindow::initialize() {
+#if defined(_WIN32)
+    SDL_SetMainReady();
+#endif
     if (headless_mode_) {
         SDL_SetHint("SDL_VIDEODRIVER", "dummy");
     }
