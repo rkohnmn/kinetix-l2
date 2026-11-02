@@ -22,6 +22,17 @@ PAIRS = [
 ]
 
 
+def collect_cpp_files(target: Path) -> list[Path]:
+    if target.is_file():
+        return [target]
+    if target.is_dir():
+        files = []
+        for ext in ("*.cpp", "*.hpp", "*.h"):
+            files.extend(sorted(target.rglob(ext)))
+        return files
+    return []
+
+
 def check_file(path: Path) -> list[str]:
     text = path.read_text(encoding="utf-8", errors="ignore")
     # Strip single-line comments
@@ -39,14 +50,13 @@ def check_file(path: Path) -> list[str]:
 
 def main() -> int:
     if len(sys.argv) < 2:
-        print("Usage: check_imgui_cpp.py <source.cpp ...>")
+        print("Usage: check_imgui_cpp.py <source.cpp or directory ...>")
         return 1
 
     all_errors = []
-    for arg in sys.argv[1:]:
-        p = Path(arg)
-        if p.exists():
-            all_errors.extend(check_file(p))
+    files = sorted({p for arg in sys.argv[1:] for p in collect_cpp_files(Path(arg))})
+    for p in files:
+        all_errors.extend(check_file(p))
 
     if all_errors:
         print("=== Dear ImGui Static Balance Audit: FAIL ===")
@@ -54,7 +64,7 @@ def main() -> int:
             print(f"  [ERROR] {e}")
         return 1
 
-    print(f"=== Dear ImGui Static Balance Audit: PASS ({len(sys.argv) - 1} files verified) ===")
+    print(f"=== Dear ImGui Static Balance Audit: PASS ({len(files)} files verified) ===")
     print("  [OK] All Begin*/End* and Push*/Pop* calls are 100% balanced.")
     return 0
 

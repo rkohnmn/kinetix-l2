@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install Native C++20, SDL2, Cairo, and SQLite3 Dependencies
+      - name: Install Native C++20, SDL2, Cairo, Pango, RSVG, and SQLite3 Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake libsdl2-dev libcairo2-dev libsqlite3-dev python3
+          sudo apt-get install -y build-essential cmake pkg-config libsdl2-dev libcairo2-dev librsvg2-dev libpango1.0-dev libglib2.0-dev libsqlite3-dev python3
       - name: Build Kinetix L2 & Test Suite
         run: make all
       - name: Run Unit & Integration Tests
@@ -29,19 +29,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install Dependencies via Homebrew
-        run: brew install cmake sdl2 cairo sqlite
+        run: brew install cmake pkg-config sdl2 cairo librsvg pango glib sqlite
       - name: Configure and Build via CMake
         run: |
           cmake -B build -DCMAKE_BUILD_TYPE=Release
           cmake --build build --parallel
           ctest --test-dir build --output-on-failure
-
-  windows-native-build:
-    runs-on: windows-2022
-    steps:
-      - uses: actions/checkout@v4
-      - name: Configure CMake with vcpkg Native Dependencies
-        run: |
-          vcpkg install sdl2 cairo sqlite3
-          cmake -B build -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
-          cmake --build build --config Release

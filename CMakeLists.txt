@@ -76,13 +76,16 @@ elseif(ANDROID)
     target_link_libraries(kinetix_core PUBLIC android log GLESv2 OpenSLES)
 else()
     target_compile_definitions(kinetix_core PUBLIC PLATFORM_LINUX)
-    find_library(SQLITE3_LIB NAMES sqlite3 libsqlite3.so.0 PATHS /usr/lib/x86_64-linux-gnu /usr/lib /usr/local/lib)
-    find_library(CAIRO_LIB NAMES cairo libcairo.so.2 PATHS /usr/lib/x86_64-linux-gnu /usr/lib /usr/local/lib)
-    find_library(RSVG_LIB NAMES rsvg-2 librsvg-2.so.2 PATHS /usr/lib/x86_64-linux-gnu /usr/lib /usr/local/lib)
-    find_library(PANGO_LIB NAMES pango-1.0 libpango-1.0.so.0 PATHS /usr/lib/x86_64-linux-gnu /usr/lib /usr/local/lib)
-    find_library(PANGOCAIRO_LIB NAMES pangocairo-1.0 libpangocairo-1.0.so.0 PATHS /usr/lib/x86_64-linux-gnu /usr/lib /usr/local/lib)
-    find_library(GOBJECT_LIB NAMES gobject-2.0 libgobject-2.0.so.0 PATHS /usr/lib/x86_64-linux-gnu /usr/lib /usr/local/lib)
-    find_library(SDL2_LIB NAMES SDL2 SDL2-2.0 libSDL2-2.0.so.0 PATHS /usr/lib/x86_64-linux-gnu /usr/lib /usr/local/lib)
+endif()
+
+if(APPLE OR (UNIX AND NOT ANDROID))
+    find_library(SQLITE3_LIB NAMES sqlite3 libsqlite3.so.0 PATHS /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /opt/homebrew/lib /usr/local/lib /usr/lib)
+    find_library(CAIRO_LIB NAMES cairo libcairo.so.2 PATHS /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /opt/homebrew/lib /usr/local/lib /usr/lib)
+    find_library(RSVG_LIB NAMES rsvg-2 librsvg-2.so.2 PATHS /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /opt/homebrew/lib /usr/local/lib /usr/lib)
+    find_library(PANGO_LIB NAMES pango-1.0 libpango-1.0.so.0 PATHS /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /opt/homebrew/lib /usr/local/lib /usr/lib)
+    find_library(PANGOCAIRO_LIB NAMES pangocairo-1.0 libpangocairo-1.0.so.0 PATHS /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /opt/homebrew/lib /usr/local/lib /usr/lib)
+    find_library(GOBJECT_LIB NAMES gobject-2.0 libgobject-2.0.so.0 PATHS /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /opt/homebrew/lib /usr/local/lib /usr/lib)
+    find_library(SDL2_LIB NAMES SDL2 SDL2-2.0 libSDL2-2.0.so.0 PATHS /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /opt/homebrew/lib /usr/local/lib /usr/lib)
 
     target_link_libraries(kinetix_core
         PUBLIC
