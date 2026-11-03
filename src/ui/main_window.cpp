@@ -525,7 +525,25 @@ void MainWindow::trigger_button_action(const std::string& button_id) {
 }
 
 void MainWindow::present_to_sdl() {
-    if (!sdl_renderer_ || !sdl_texture_) return;
+    if (headless_mode_ || !sdl_renderer_) return;
+    int tex_w = 0, tex_h = 0;
+    if (sdl_texture_) {
+        SDL_QueryTexture(sdl_texture_, nullptr, nullptr, &tex_w, &tex_h);
+    }
+    if (!sdl_texture_ || tex_w != canvas_.width() || tex_h != canvas_.height()) {
+        if (sdl_texture_) {
+            SDL_DestroyTexture(sdl_texture_);
+            sdl_texture_ = nullptr;
+        }
+        sdl_texture_ = SDL_CreateTexture(
+            sdl_renderer_,
+            SDL_PIXELFORMAT_ARGB8888,
+            SDL_TEXTUREACCESS_STREAMING,
+            canvas_.width(),
+            canvas_.height()
+        );
+    }
+    if (!sdl_texture_ || !canvas_.pixels()) return;
     SDL_UpdateTexture(sdl_texture_, nullptr, canvas_.pixels(), canvas_.stride());
     SDL_RenderClear(sdl_renderer_);
     SDL_RenderCopy(sdl_renderer_, sdl_texture_, nullptr, nullptr);
