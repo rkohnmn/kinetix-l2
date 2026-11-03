@@ -119,3 +119,11 @@ if(KINETIX_BUILD_TESTS)
     set_tests_properties(NativeRenderingContract PROPERTIES ENVIRONMENT "SDL_VIDEODRIVER=dummy" TIMEOUT 30)
     add_test(NAME KinetixUnitAndIntegrationSuite COMMAND kinetix-tests WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
+
+# Dedicated fixed-fixture samples, separate from correctness smoke limits.
+option(BUILD_PERFORMANCE_SAMPLES "Build repeated performance sampling tool" OFF)
+if(BUILD_PERFORMANCE_SAMPLES)
+    add_executable(kinetix-perf-samples benchmarks/perf_samples.cpp)
+    target_link_libraries(kinetix-perf-samples PRIVATE kinetix_core)
+    target_compile_definitions(kinetix-perf-samples PRIVATE PERF_BUILD_TYPE="$<CONFIG>" PERF_COMPILER="${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+endif()

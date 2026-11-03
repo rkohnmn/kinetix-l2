@@ -91,14 +91,9 @@ These build artifacts are not a standalone Windows installer.
 | `--import-tsv <path>` | Import cards from Anki TSV file with transactional rollback on error. |
 | `--db <path>` | Specify custom SQLite3 database file path (defaults to `kinetix_l2.sqlite3`). |
 
-### Verified C++20 Benchmark Results (`./build-win/Release/kinetix-l2.exe --benchmark`)
+### Repeatable native performance measurements
 
-| Subsystem Benchmarked | Measured Performance | Architectural Mechanism |
-|---|---|---|
-| **Vectorized SoA FSRS-4.5 Batch Evaluator (`44` tuples)** | **`1.79–2.01 µs / batch`** | 64-byte cache-line aligned `alignas(64) ModalityStatesSoA` contiguous vectors (`include/kinetix/domain/fsrs_engine.hpp`). |
-| **`PoolAllocator<LinguisticNode, 4096>` Lifecycle** | **`5.19–59.44 ns / alloc+free`** | Zero-fragmentation 4 KB arena slab allocator with move-only RAII smart handles (`include/kinetix/domain/memory_pool.hpp`). |
-| **Warm-Cache `1440×880` Frame Render** | **`0.52–0.56 ms` (`1800+ FPS`)** | Pre-rasterized `librsvg` sprite cache, persistent `PangoLayout` & `O(1)` text-width hash cache, and cached ambient mesh backdrop surface (`src/ui/vector_canvas.cpp`). |
-| **Dear ImGui Scope & ID Stack Verification** | **`100% BALANCED` (`0` leaks)** | Verified at runtime via `ImGuiContextTracker::VerifyFrameBalance()` and statically via `scripts/check_imgui_cpp.py`. |
+See [PERFORMANCE.md](PERFORMANCE.md) for the Release sampling tool and CI artifacts containing raw samples, median and p95. Earlier Windows rendering figures were produced with the placeholder ABI layer and do not establish real rendering performance; they have been removed. CPU render timing must not be presented as display FPS.
 
 ---
 
