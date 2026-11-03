@@ -50,6 +50,7 @@ jobs:
           update: true
           install: >-
             mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-gdb
             mingw-w64-ucrt-x86_64-cmake
             mingw-w64-ucrt-x86_64-ninja
             mingw-w64-ucrt-x86_64-pkgconf
@@ -60,10 +61,13 @@ jobs:
             mingw-w64-ucrt-x86_64-sqlite3
       - name: Build real Windows renderer
         run: |
-          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo
           cmake --build build --parallel 2
       - name: Test rendering, PNG decoding and application behavior
         run: ctest --test-dir build --output-on-failure
+      - name: Diagnose native test failures
+        if: failure()
+        run: gdb -batch -ex run -ex "thread apply all bt" --args ./build/kinetix-tests.exe
       - name: Export real application snapshots
         run: ./build/kinetix-l2.exe --db build/verify.sqlite3 --export-screenshots build/snapshots
       - uses: actions/upload-artifact@v4

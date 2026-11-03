@@ -352,6 +352,7 @@ void test_ux_design_system_workflows_and_snapshots() {
 } // namespace
 
 int main() {
+    std::cout << std::unitbuf;
     try {
         test_fsrs_power_law_and_soa_batch();
         test_memory_pool_allocator();
