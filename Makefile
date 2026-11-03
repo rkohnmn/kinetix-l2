@@ -29,10 +29,11 @@ CORE_SRCS := src/domain/fsrs_engine.cpp \
 
 APP_BIN   := $(BUILD_DIR)/kinetix-l2
 TEST_BIN  := $(BUILD_DIR)/kinetix-tests
+RENDER_TEST_BIN := $(BUILD_DIR)/kinetix-rendering-tests
 
 .PHONY: all test verify audit clean
 
-all: $(APP_BIN) $(TEST_BIN)
+all: $(APP_BIN) $(TEST_BIN) $(RENDER_TEST_BIN)
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -43,8 +44,12 @@ $(APP_BIN): $(BUILD_DIR) $(CORE_SRCS) src/main.cpp
 $(TEST_BIN): $(BUILD_DIR) $(CORE_SRCS) tests/test_main.cpp
 	$(CXX) $(CXXFLAGS) $(CORE_SRCS) tests/test_main.cpp $(LIBS) -o $(TEST_BIN)
 
-test: $(TEST_BIN)
+$(RENDER_TEST_BIN): $(BUILD_DIR) $(CORE_SRCS) tests/test_rendering.cpp
+	$(CXX) $(CXXFLAGS) $(CORE_SRCS) tests/test_rendering.cpp $(LIBS) -o $(RENDER_TEST_BIN)
+
+test: $(TEST_BIN) $(RENDER_TEST_BIN)
 	./$(TEST_BIN)
+	SDL_VIDEODRIVER=dummy ./$(RENDER_TEST_BIN)
 
 verify: $(APP_BIN)
 	./$(APP_BIN) --verify-all-features

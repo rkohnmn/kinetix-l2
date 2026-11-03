@@ -30,10 +30,12 @@ int main() {
         require(pixel(canvas.pixels(), canvas.stride(), 0, 0) == 0xffffffffU, "Cairo must preserve the background");
         require(canvas.draw_svg_string("<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><rect width='16' height='16' fill='#00ff00'/></svg>", {40, 8, 16, 16}), "SVG renderer must succeed");
         require(pixel(canvas.pixels(), canvas.stride(), 48, 16) == 0xff00ff00U, "librsvg must draw green pixels");
-        canvas.draw_text(2, 40, "Native text", 16, {0, 0, 0, 1}, false, "sans-serif");
+        kinetix::ui::VectorCanvas text_canvas(192, 64);
+        text_canvas.clear({1, 1, 1, 1});
+        text_canvas.draw_text(2, 40, "Native text", 16, {0, 0, 0, 1}, false, "sans-serif");
         size_t changed = 0;
-        for (int y = 40; y < 64; ++y) for (int x = 0; x < 96; ++x)
-            if (pixel(canvas.pixels(), canvas.stride(), x, y) != 0xffffffffU) ++changed;
+        for (int y = 0; y < 64; ++y) for (int x = 0; x < 192; ++x)
+            if (pixel(text_canvas.pixels(), text_canvas.stride(), x, y) != 0xffffffffU) ++changed;
         require(changed > 10, "Pango must render visible glyphs");
         const auto png = (directory / "render.png").string();
         require(canvas.export_png(png), "PNG export failed");

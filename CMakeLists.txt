@@ -65,13 +65,16 @@ target_link_libraries(kinetix_core
 )
 
 if(WIN32)
-    target_compile_definitions(kinetix_core PUBLIC PLATFORM_WINDOWS)
+    target_compile_definitions(kinetix_core PUBLIC PLATFORM_WINDOWS SDL_MAIN_HANDLED)
     if(MSVC)
         message(FATAL_ERROR "Windows builds require MSYS2 UCRT64 and its native SDL2/Cairo/Pango/librsvg packages; see README.md")
     endif()
     find_package(PkgConfig REQUIRED)
-    pkg_check_modules(NATIVE REQUIRED IMPORTED_TARGET sqlite3 cairo pangocairo librsvg-2.0 sdl2)
-    target_link_libraries(kinetix_core PUBLIC PkgConfig::NATIVE)
+    pkg_check_modules(NATIVE REQUIRED IMPORTED_TARGET sqlite3 cairo pangocairo librsvg-2.0)
+    # SDL's pkg-config flags add SDL2main and -mwindows. We own our console
+    # entry points and explicitly call SDL_SetMainReady instead.
+    find_package(SDL2 CONFIG REQUIRED)
+    target_link_libraries(kinetix_core PUBLIC PkgConfig::NATIVE SDL2::SDL2)
 elseif(APPLE)
     target_compile_definitions(kinetix_core PUBLIC PLATFORM_MACOS)
     target_link_libraries(kinetix_core PUBLIC "-framework Cocoa" "-framework Metal" "-framework CoreAudio" "-framework AudioToolbox")
