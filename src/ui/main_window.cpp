@@ -97,6 +97,8 @@ bool MainWindow::initialize() {
             width_,
             height_
         );
+        texture_width_ = width_;
+        texture_height_ = height_;
     }
 
     SDL_StartTextInput();
@@ -526,11 +528,7 @@ void MainWindow::trigger_button_action(const std::string& button_id) {
 
 void MainWindow::present_to_sdl() {
     if (headless_mode_ || !sdl_renderer_) return;
-    int tex_w = 0, tex_h = 0;
-    if (sdl_texture_) {
-        SDL_QueryTexture(sdl_texture_, nullptr, nullptr, &tex_w, &tex_h);
-    }
-    if (!sdl_texture_ || tex_w != canvas_.width() || tex_h != canvas_.height()) {
+    if (!sdl_texture_ || texture_width_ != canvas_.width() || texture_height_ != canvas_.height()) {
         if (sdl_texture_) {
             SDL_DestroyTexture(sdl_texture_);
             sdl_texture_ = nullptr;
@@ -542,6 +540,8 @@ void MainWindow::present_to_sdl() {
             canvas_.width(),
             canvas_.height()
         );
+        texture_width_ = canvas_.width();
+        texture_height_ = canvas_.height();
     }
     if (!sdl_texture_ || !canvas_.pixels()) return;
     SDL_UpdateTexture(sdl_texture_, nullptr, canvas_.pixels(), canvas_.stride());

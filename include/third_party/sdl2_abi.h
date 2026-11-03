@@ -205,6 +205,13 @@ SDL_Texture* SDL_CreateTexture(
     int w, int h
 );
 void SDL_DestroyTexture(SDL_Texture* texture);
+int SDL_QueryTexture(
+    SDL_Texture* texture,
+    uint32_t* format,
+    int* access,
+    int* w,
+    int* h
+);
 int SDL_UpdateTexture(
     SDL_Texture* texture,
     const SDL_Rect* rect,

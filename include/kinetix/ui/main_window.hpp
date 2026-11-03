@@ -157,6 +157,8 @@ private:
     SDL_Window* sdl_window_ = nullptr;
     SDL_Renderer* sdl_renderer_ = nullptr;
     SDL_Texture* sdl_texture_ = nullptr;
+    int texture_width_ = 0;
+    int texture_height_ = 0;
     VectorCanvas canvas_;
 
     AppScreen current_screen_ = AppScreen::Screen1_WorkbenchOverview;
