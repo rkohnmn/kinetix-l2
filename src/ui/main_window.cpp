@@ -101,6 +101,7 @@ bool MainWindow::initialize() {
         texture_height_ = height_;
     }
 
+    if (!sdl_renderer_ || !sdl_texture_) return false;
     SDL_StartTextInput();
     render_frame();
     present_to_sdl();
@@ -544,7 +545,7 @@ void MainWindow::present_to_sdl() {
         texture_height_ = canvas_.height();
     }
     if (!sdl_texture_ || !canvas_.pixels()) return;
-    SDL_UpdateTexture(sdl_texture_, nullptr, canvas_.pixels(), canvas_.stride());
+    if (SDL_UpdateTexture(sdl_texture_, nullptr, canvas_.pixels(), canvas_.stride()) != 0) return;
     SDL_RenderClear(sdl_renderer_);
     SDL_RenderCopy(sdl_renderer_, sdl_texture_, nullptr, nullptr);
     SDL_RenderPresent(sdl_renderer_);

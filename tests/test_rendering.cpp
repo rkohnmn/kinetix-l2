@@ -1,8 +1,10 @@
 #include "kinetix/ui/vector_canvas.hpp"
+#include "kinetix/ui/main_window.hpp"
 #include "third_party/sdl2_abi.h"
 #include <cstring>
 #include <filesystem>
 #include <iostream>
+#include <memory>
 #include <random>
 #include <stdexcept>
 
@@ -63,6 +65,18 @@ int main() {
         require(delivered, "SDL must deliver queued keyboard events");
         SDL_DestroyWindow(window);
         SDL_Quit();
+        {
+            kinetix::persistence::DatabaseManager db((directory / "resize.sqlite3").string());
+            require(db.initialize_schema(), "Resize fixture database must initialize");
+            kinetix::domain::KnowledgeGraph graph;
+            db.seed_default_curriculum_if_empty(graph);
+            // Exercise the real presentation path using SDL's dummy driver,
+            // including desktop -> mobile -> desktop texture uploads.
+            auto studio = std::make_unique<kinetix::ui::MainWindow>(db, graph, 1440, 880, false);
+            require(studio->initialize(), "SDL presentation must initialize");
+            require(studio->export_all_screen_snapshots((directory / "snapshots").string()),
+                    "Layout switches must present and export without buffer over-reads");
+        }
         std::filesystem::remove_all(directory);
         std::cout << "PASS: Cairo pixels, Pango glyphs, SVG pixels, decoded PNG, SDL window/events\n";
         return 0;
