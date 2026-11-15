@@ -199,7 +199,8 @@ bool DatabaseManager::verify_database_integrity() const {
 }
 
 bool DatabaseManager::save_node(const domain::LinguisticNode& node) {
-    if (!db_) return false;
+    if (!db_ || !execute_sql("SAVEPOINT kinetix_save_node;")) return false;
+    const auto write_node = [&]() -> bool {
 
     const char* sql_node = R"SQL(
         INSERT INTO linguistic_nodes (
@@ -241,20 +242,35 @@ bool DatabaseManager::save_node(const domain::LinguisticNode& node) {
     sqlite3_finalize(stmt);
     if (rc != SQLITE_DONE) return false;
 
-    // Save prerequisites using prepared statement reuse (eliminates N+1 sqlite3_prepare_v2)
+    // Replace exactly this node's prerequisite set. The surrounding savepoint
+    // ensures that a missing FK or a failing statement cannot save partial state.
+    sqlite3_stmt* d_stmt = nullptr;
+    if (sqlite3_prepare_v2(db_,
+            "DELETE FROM node_prerequisites WHERE node_id = ?;", -1, &d_stmt, nullptr) != SQLITE_OK) {
+        return false;
+    }
+    sqlite3_bind_int64(d_stmt, 1, node.id);
+    const int delete_rc = sqlite3_step(d_stmt);
+    sqlite3_finalize(d_stmt);
+    if (delete_rc != SQLITE_DONE) return false;
+
     if (!node.prerequisites.empty()) {
         const char* sql_prereq = "INSERT OR IGNORE INTO node_prerequisites (node_id, prerequisite_id) VALUES (?, ?);";
         sqlite3_stmt* p_stmt = nullptr;
-        if (sqlite3_prepare_v2(db_, sql_prereq, -1, &p_stmt, nullptr) == SQLITE_OK) {
-            for (domain::NodeId pre_id : node.prerequisites) {
-                sqlite3_reset(p_stmt);
-                sqlite3_clear_bindings(p_stmt);
-                sqlite3_bind_int64(p_stmt, 1, node.id);
-                sqlite3_bind_int64(p_stmt, 2, pre_id);
-                sqlite3_step(p_stmt);
-            }
-            sqlite3_finalize(p_stmt);
+        if (sqlite3_prepare_v2(db_, sql_prereq, -1, &p_stmt, nullptr) != SQLITE_OK) {
+            return false;
         }
+        for (domain::NodeId pre_id : node.prerequisites) {
+            sqlite3_reset(p_stmt);
+            sqlite3_clear_bindings(p_stmt);
+            sqlite3_bind_int64(p_stmt, 1, node.id);
+            sqlite3_bind_int64(p_stmt, 2, pre_id);
+            if (sqlite3_step(p_stmt) != SQLITE_DONE) {
+                sqlite3_finalize(p_stmt);
+                return false;
+            }
+        }
+        sqlite3_finalize(p_stmt);
     }
 
     // Save 4 modality states using prepared statement reuse (1 prepare instead of 4 per node)
@@ -297,6 +313,18 @@ bool DatabaseManager::save_node(const domain::LinguisticNode& node) {
     }
     sqlite3_finalize(m_stmt);
     return true;
+    };
+    if (!write_node()) {
+        execute_sql("ROLLBACK TO SAVEPOINT kinetix_save_node;");
+        execute_sql("RELEASE SAVEPOINT kinetix_save_node;");
+        return false;
+    }
+    if (!execute_sql("RELEASE SAVEPOINT kinetix_save_node;")) {
+        execute_sql("ROLLBACK TO SAVEPOINT kinetix_save_node;");
+        execute_sql("RELEASE SAVEPOINT kinetix_save_node;");
+        return false;
+    }
+    return true;
 }
 
 bool DatabaseManager::record_review_transaction(
@@ -312,7 +340,7 @@ bool DatabaseManager::record_review_transaction(
     }
 
     const char* sql_rev = R"SQL(
-        INSERT OR REPLACE INTO revlog (
+        INSERT INTO revlog (
             event_uuid, timestamp, node_id, modality, rating, response_time_ms,
             elapsed_days, scheduled_days, pre_stability, post_stability,
             pre_difficulty, post_difficulty, context_tag
@@ -604,15 +632,14 @@ bool DatabaseManager::export_anki_tsv(const std::string& output_tsv_path, const 
     std::ofstream out(output_tsv_path, std::ios::trunc);
     if (!out.is_open()) return false;
     out << "#separator:tab\n#html:false\n#columns:NodeID\tLanguage\tTargetForm\tIPA\tConceptGloss\tMorphologicalNote\tExampleL2\tExampleGloss\tS_RecText\tS_RecAudio\tS_ProdText\tS_ProdAudio\n";
-    for (const char* lang : {"de", "es", "ja"}) {
-        for (const auto& n : graph.nodes_for_language(lang)) {
+    for (const auto& entry : graph.all_nodes()) {
+        const auto& n = entry.second;
             out << n.id << "\t" << n.language_code << "\t" << n.target_form << "\t"
                 << n.phonetic_ipa << "\t" << n.concept_gloss << "\t"
                 << n.morphological_note << "\t" << n.example_context_l2 << "\t"
                 << n.example_context_gloss << "\t"
                 << n.modalities[0].stability << "\t" << n.modalities[1].stability << "\t"
                 << n.modalities[2].stability << "\t" << n.modalities[3].stability << "\n";
-        }
     }
     out.flush();
     return out.good();
@@ -650,7 +677,12 @@ bool DatabaseManager::import_anki_tsv(const std::string& input_tsv_path, domain:
 
         domain::LinguisticNode node{};
         try {
-            node.id = std::stoll(cols[0]);
+            size_t parsed_id_bytes = 0;
+            node.id = std::stoll(cols[0], &parsed_id_bytes);
+            if (parsed_id_bytes != cols[0].size()) {
+                execute_sql("ROLLBACK;");
+                return false;
+            }
             node.language_code = cols[1];
             node.type = domain::NodeType::LexicalChunk;
             node.target_form = cols[2];
@@ -669,8 +701,10 @@ bool DatabaseManager::import_anki_tsv(const std::string& input_tsv_path, domain:
             }
 
             for (size_t m = 0; m < 4; ++m) {
-                const double s_val = std::stod(cols[8 + m]);
-                if (!std::isfinite(s_val) || s_val < 0.0 || s_val > 36500.0) {
+                size_t parsed_bytes = 0;
+                const double s_val = std::stod(cols[8 + m], &parsed_bytes);
+                if (parsed_bytes != cols[8 + m].size() ||
+                    !std::isfinite(s_val) || s_val < 0.0 || s_val > 36500.0) {
                     execute_sql("ROLLBACK;");
                     return false;
                 }
@@ -929,8 +963,10 @@ bool DatabaseManager::seed_default_curriculum_if_empty(domain::KnowledgeGraph& g
 
     if (!execute_sql("BEGIN TRANSACTION;")) return false;
     for (const auto& n : seed_nodes) {
-        save_node(n);
-        graph.upsert_node(n);
+        if (!save_node(n)) {
+            execute_sql("ROLLBACK;");
+            return false;
+        }
     }
 
     // Seed Immersion Passages (95-98% comprehensible input sweet spot)
@@ -957,11 +993,23 @@ bool DatabaseManager::seed_default_curriculum_if_empty(domain::KnowledgeGraph& g
              '電車が遅れているので、会議の前に資料を確認しなければなりません。少し遅れるかもしれません。',
              'Office coordination dialogue practicing causal clauses and double-negative obligation structures.');
     )SQL";
-    execute_sql(sql_pass);
+    if (!execute_sql(sql_pass)) {
+        execute_sql("ROLLBACK;");
+        return false;
+    }
 
-    execute_sql("INSERT OR IGNORE INTO passage_nodes VALUES (1, 101), (1, 102), (1, 103), (1, 104), (1, 105), (1, 106), (4, 101), (4, 102), (4, 103), (4, 104), (4, 105), (4, 106);");
-    execute_sql("INSERT OR IGNORE INTO passage_nodes VALUES (2, 201), (2, 202), (2, 203), (5, 201), (5, 202), (5, 203);");
-    execute_sql("INSERT OR IGNORE INTO passage_nodes VALUES (3, 301), (3, 302), (6, 301), (6, 302);");
+    if (!execute_sql("INSERT OR IGNORE INTO passage_nodes VALUES (1, 101), (1, 102), (1, 103), (1, 104), (1, 105), (1, 106), (4, 101), (4, 102), (4, 103), (4, 104), (4, 105), (4, 106);")) {
+        execute_sql("ROLLBACK;");
+        return false;
+    }
+    if (!execute_sql("INSERT OR IGNORE INTO passage_nodes VALUES (2, 201), (2, 202), (2, 203), (5, 201), (5, 202), (5, 203);")) {
+        execute_sql("ROLLBACK;");
+        return false;
+    }
+    if (!execute_sql("INSERT OR IGNORE INTO passage_nodes VALUES (3, 301), (3, 302), (6, 301), (6, 302);")) {
+        execute_sql("ROLLBACK;");
+        return false;
+    }
 
     // Seed sample CRDT revlog events
     const char* sql_rev_seed = R"SQL(
@@ -974,12 +1022,20 @@ bool DatabaseManager::seed_default_curriculum_if_empty(domain::KnowledgeGraph& g
             ('ev-103-2-1792320800-7', 1792320800, 103, 2, 1, 2740,  5.0,  3.4, 11.2,  3.4, 8.1, 8.7, 'stage3_leech_detect'),
             ('ev-104-3-1792407200-3', 1792407200, 104, 3, 3, 2120,  2.5,  4.1,  2.1,  4.1, 6.4, 6.4, 'stage4_pushed_output');
     )SQL";
-    execute_sql(sql_rev_seed);
+    if (!execute_sql(sql_rev_seed)) {
+        execute_sql("ROLLBACK;");
+        return false;
+    }
 
     domain::EthicalHabitState default_habit{};
-    save_habit_state(default_habit);
-
-    return execute_sql("COMMIT;");
+    if (!save_habit_state(default_habit) || !execute_sql("COMMIT;")) {
+        execute_sql("ROLLBACK;");
+        return false;
+    }
+    for (const auto& n : seed_nodes) {
+        graph.upsert_node(n); // Publish to memory only after durable commit.
+    }
+    return true;
 }
 
 } // namespace kinetix::persistence

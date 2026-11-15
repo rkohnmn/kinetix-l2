@@ -55,7 +55,7 @@ bool KnowledgeGraph::is_productive_unlocked(NodeId id) const noexcept {
     for (NodeId prereq_id : node->prerequisites) {
         const LinguisticNode* prereq = find_node(prereq_id);
         if (!prereq) {
-            continue;
+            return false; // Missing dependency must never unlock productive practice.
         }
         const double rec_text_s = prereq->modalities[static_cast<size_t>(Modality::ReceptiveText)].stability;
         const double rec_audio_s = prereq->modalities[static_cast<size_t>(Modality::ReceptiveAudio)].stability;
@@ -75,6 +75,7 @@ std::vector<NodeId> KnowledgeGraph::blocking_prerequisites(NodeId id) const {
     for (NodeId prereq_id : node->prerequisites) {
         const LinguisticNode* prereq = find_node(prereq_id);
         if (!prereq) {
+            blocking.push_back(prereq_id); // Surface unresolved prerequisites to the learner.
             continue;
         }
         const double rec_text_s = prereq->modalities[static_cast<size_t>(Modality::ReceptiveText)].stability;

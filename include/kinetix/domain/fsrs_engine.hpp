@@ -80,7 +80,7 @@ public:
     double next_forget_stability(double d, double s, double r) const noexcept;
 
     // Vectorized SoA Batch Evaluation (`optimcpop.md` pattern): returns execution duration in microseconds
-    double evaluate_batch_soa(ModalityStatesSoA& batch) const noexcept;
+    double evaluate_batch_soa(ModalityStatesSoA& batch) const;
 
     FsrsScheduleResult step_review(
         NodeId node_id,

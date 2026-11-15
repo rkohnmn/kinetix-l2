@@ -9,6 +9,13 @@
 
 namespace kinetix::ui {
 
+namespace {
+domain::TimestampSec review_timestamp_now() noexcept {
+    return std::chrono::duration_cast<std::chrono::seconds>(
+        std::chrono::system_clock::now().time_since_epoch()).count();
+}
+} // namespace
+
 MainWindow::MainWindow(
     persistence::DatabaseManager& db,
     domain::KnowledgeGraph& graph,
@@ -285,7 +292,15 @@ void MainWindow::submit_explicit_fsrs_grade(domain::Rating rating, int32_t laten
         last_evaluation_.suggested_fsrs_rating = rating;
         has_last_evaluation_ = true;
 
-        const domain::TimestampSec now_ts = 1792580000LL + habit_state_.completed_tasks_today * 120LL;
+        const auto* prior = graph_.find_node(current_exercise_.node_id);
+        if (!prior) {
+            status_banner_message_ = "Review cannot be saved: selected exercise is missing.";
+            render_frame();
+            present_to_sdl();
+            return;
+        }
+        const auto original_node = *prior;
+        const domain::TimestampSec now_ts = review_timestamp_now();
         const auto sched = graph_.record_review(
             current_exercise_.node_id,
             current_exercise_.target_modality,
@@ -294,8 +309,13 @@ void MainWindow::submit_explicit_fsrs_grade(domain::Rating rating, int32_t laten
             latency_ms,
             "native_studio_explicit_grade"
         );
-        if (const auto* updated_node = graph_.find_node(current_exercise_.node_id)) {
-            db_.record_review_transaction(*updated_node, sched.log_entry);
+        const auto* updated_node = graph_.find_node(current_exercise_.node_id);
+        if (!updated_node || !db_.record_review_transaction(*updated_node, sched.log_entry)) {
+            graph_.upsert_node(original_node);
+            status_banner_message_ = "Review was not saved; memory progress was restored.";
+            render_frame();
+            present_to_sdl();
+            return;
         }
         habit_engine_.record_task_completed(habit_state_, false);
         db_.save_habit_state(habit_state_);
@@ -316,7 +336,15 @@ void MainWindow::submit_exercise_text(const std::string& text, int32_t simulated
     last_evaluation_ = loop_engine_.evaluate_attempt(current_exercise_, text, simulated_latency_ms);
     has_last_evaluation_ = true;
 
-    const domain::TimestampSec now_ts = 1792580000LL + habit_state_.completed_tasks_today * 120LL;
+    const auto* prior = graph_.find_node(current_exercise_.node_id);
+    if (!prior) {
+        status_banner_message_ = "Review cannot be saved: selected exercise is missing.";
+        render_frame();
+        present_to_sdl();
+        return;
+    }
+    const auto original_node = *prior;
+    const domain::TimestampSec now_ts = review_timestamp_now();
     const auto sched = graph_.record_review(
         current_exercise_.node_id,
         current_exercise_.target_modality,
@@ -326,8 +354,13 @@ void MainWindow::submit_exercise_text(const std::string& text, int32_t simulated
         "native_studio_active_recall"
     );
 
-    if (const auto* updated_node = graph_.find_node(current_exercise_.node_id)) {
-        db_.record_review_transaction(*updated_node, sched.log_entry);
+    const auto* updated_node = graph_.find_node(current_exercise_.node_id);
+    if (!updated_node || !db_.record_review_transaction(*updated_node, sched.log_entry)) {
+        graph_.upsert_node(original_node);
+        status_banner_message_ = "Review was not saved; memory progress was restored.";
+        render_frame();
+        present_to_sdl();
+        return;
     }
 
     habit_engine_.record_task_completed(habit_state_, false);
@@ -384,7 +417,15 @@ void MainWindow::trigger_button_action(const std::string& button_id) {
     } else if (button_id == "cta_start_next_action") {
         switch_screen(AppScreen::Screen3_ActiveRecallStudio);
     } else if (button_id == "mine_selected_token") {
-        const domain::TimestampSec now_ts = 1792580000LL + (habit_state_.completed_tasks_today + 1) * 120LL;
+        const auto* prior = graph_.find_node(selected_node_id_);
+        if (!prior) {
+            status_banner_message_ = "No selected node to mine.";
+            render_frame();
+            present_to_sdl();
+            return;
+        }
+        const auto original_node = *prior;
+        const domain::TimestampSec now_ts = review_timestamp_now();
         const auto sched = graph_.record_review(
             selected_node_id_,
             domain::Modality::ReceptiveText,
@@ -393,8 +434,13 @@ void MainWindow::trigger_button_action(const std::string& button_id) {
             1120,
             "stage1_sentence_mined"
         );
-        if (const auto* updated_node = graph_.find_node(selected_node_id_)) {
-            db_.record_review_transaction(*updated_node, sched.log_entry);
+        const auto* updated_node = graph_.find_node(selected_node_id_);
+        if (!updated_node || !db_.record_review_transaction(*updated_node, sched.log_entry)) {
+            graph_.upsert_node(original_node);
+            status_banner_message_ = "Mined review was not saved; memory progress was restored.";
+            render_frame();
+            present_to_sdl();
+            return;
         }
         habit_engine_.record_task_completed(habit_state_, true);
         db_.save_habit_state(habit_state_);
@@ -403,9 +449,16 @@ void MainWindow::trigger_button_action(const std::string& button_id) {
         switch_screen(AppScreen::Screen3_ActiveRecallStudio);
     } else if (button_id == "inspector_reset_node") {
         if (auto* n = graph_.find_node_mutable(selected_node_id_)) {
+            const auto original_node = *n;
             n->modalities[2].lapses = 0;
             n->modalities[2].difficulty = 5.2;
-            db_.save_node(*n);
+            if (!db_.save_node(*n)) {
+                *n = original_node;
+                status_banner_message_ = "Node reset failed to save; previous state restored.";
+                render_frame();
+                present_to_sdl();
+                return;
+            }
             update_soa_and_pool_telemetry();
             status_banner_message_ = "Reset Node #" + std::to_string(selected_node_id_) + " productive leech counter safely.";
             render_frame();
@@ -1222,7 +1275,7 @@ void MainWindow::render_mobile_bottom_nav(const ThemePalette& theme) {
 }
 
 void MainWindow::render_screen1_overview(const Rect& area, const ThemePalette& theme) {
-    const domain::TimestampSec now_ts = 1792580000LL;
+    const domain::TimestampSec now_ts = review_timestamp_now();
     const auto summary = graph_.compute_summary(active_language_, now_ts);
     const auto due_queue = graph_.build_due_queue(active_language_, now_ts);
 

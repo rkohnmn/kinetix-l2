@@ -138,9 +138,16 @@ double FsrsEngine::next_forget_stability(double d, double s, double r) const noe
     return std::clamp(std::min(safe_s, s_forget), 0.1, safe_s);
 }
 
-double FsrsEngine::evaluate_batch_soa(ModalityStatesSoA& batch) const noexcept {
+double FsrsEngine::evaluate_batch_soa(ModalityStatesSoA& batch) const {
     const auto t0 = std::chrono::steady_clock::now();
     const size_t n = batch.size();
+    if (batch.node_ids.size() != n || batch.elapsed_days.size() != n ||
+        batch.difficulties.size() != n) {
+        // Invalid parallel-array shape must not reach unchecked pointer indexing.
+        batch.out_retrievabilities.clear();
+        batch.out_next_good_stabilities.clear();
+        return -1.0; // Fail closed without reading beyond an input vector.
+    }
     batch.out_retrievabilities.resize(n);
     batch.out_next_good_stabilities.resize(n);
 
