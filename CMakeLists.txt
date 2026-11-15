@@ -118,6 +118,9 @@ if(KINETIX_BUILD_TESTS)
     add_test(NAME NativeRenderingContract COMMAND kinetix-rendering-tests)
     set_tests_properties(NativeRenderingContract PROPERTIES ENVIRONMENT "SDL_VIDEODRIVER=dummy" TIMEOUT 30)
     add_test(NAME KinetixUnitAndIntegrationSuite COMMAND kinetix-tests WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    add_executable(kinetix-audit-integrity-tests tests/test_audit_integrity.cpp)
+    target_link_libraries(kinetix-audit-integrity-tests PRIVATE kinetix_core project_warnings project_sanitizers)
+    add_test(NAME KinetixAuditDataIntegrity COMMAND kinetix-audit-integrity-tests)
 endif()
 
 # Dedicated fixed-fixture samples, separate from correctness smoke limits.
